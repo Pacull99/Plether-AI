@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plether AI - Inspired by Grok</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121215;
+            --surface-color: #1a1a1e;
+            --surface-hover: #222227;
+            --text-main: #f5f5f7;
+            --text-muted: #9a9a9f;
+            --accent-orange: #ff5722;
+            --accent-glow: rgba(255, 87, 34, 0.2);
+            --border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 48px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(18, 18, 21, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+
+        /* Logo based on provided image */
+        .logo-grid {
+            width: 36px;
+            height: 36px;
+            background-color: var(--accent-orange);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        .logo-cell {
+            background-color: #fff;
+            border-radius: 2px;
+        }
+
+        .logo-cell.active-orange {
+            background-color: var(--accent-orange);
+        }
+
+        .logo-cell.circle {
+            border-radius: 50%;
+        }
+
+        .brand-name {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-name span {
+            color: var(--accent-orange);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--text-main);
+        }
+
+        .nav-btn {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--accent-orange);
+        }
+
+        /* Main Hero Section */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Chat Prompt Box */
+        .prompt-container {
+            width: 100%;
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .prompt-container:focus-within {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .prompt-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            resize: none;
+            outline: none;
+            min-height: 80px;
+            margin-bottom: 16px;
+        }
+
+        .prompt-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .prompt-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 6px;
+            border-radius: 6px;
+            transition: color 0.2s, background-color 0.2s;
+        }
+
+        .action-icon-btn:hover {
+            color: var(--text-main);
+            background-color: var(--surface-hover);
+        }
+
+        .submit-btn {
+            background-color: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Suggestions Pills */
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        .suggestion-chip {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-chip:hover {
+            border-color: var(--accent-orange);
+            color: var(--text-main);
+            background-color: var(--surface-hover);
+        }
+
+        /* Features Cards Grid */
+        .features-section {
+            width: 100%;
+            max-width: 1100px;
+            margin: 80px auto 40px auto;
+            padding: 0 20px;
+        }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 87, 34, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 24px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            background-color: var(--bg-color);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 16px 20px;
+            }
+            nav {
+                display: none;
+            }
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            footer {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <a href="#" class="brand">
+            <!-- Custom Logo representing the uploaded image -->
+            <div class="logo-grid">
+                <div class="logo-cell"></div>
+                <div class="logo-cell"></div>
+                <div class="logo-cell"></div>
+                <div class="logo-cell"></div>
+                <div class="logo-cell active-orange circle"></div>
+                <div class="logo-cell"></div>
+                <div class="logo-cell"></div>
+                <div class="logo-cell"></div>
+                <div class="logo-cell circle" style="background-color: #ffebee;"></div>
+            </div>
+            <div class="brand-name">PLETHER<span>.AI</span></div>
+        </a>
+        <nav>
+            <a href="#" class="active">Explore</a>
+            <a href="#">Models</a>
+            <a href="#">Data Pulse</a>
+            <a href="#">API</a>
+        </nav>
+        <button class="nav-btn">Sign In</button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        <h1 class="hero-title">What do you want to explore?</h1>
+        <p class="hero-subtitle">Unfiltered intelligence, live data streams, and advanced reasoning.</p>
+
+        <!-- Prompt Interface -->
+        <div class="prompt-container">
+            <textarea class="prompt-input" placeholder="Ask Plether anything... e.g., Analyze market anomalies in real-time."></textarea>
+            <div class="prompt-footer">
+                <div class="prompt-actions">
+                    <button class="action-icon-btn" title="Attach file">📎</button>
+                    <button class="action-icon-btn" title="Search web">🌐</button>
+                    <button class="action-icon-btn" title="Deep reasoning">⚡</button>
+                </div>
+                <button class="submit-btn">Send Query</button>
+            </div>
+        </div>
+
+        <!-- Suggestion Chips -->
+        <div class="suggestions">
+            <div class="suggestion-chip">📊 Summarize Q3 Tech Trends</div>
+            <div class="suggestion-chip">💡 Explain Quantum Computing</div>
+            <div class="suggestion-chip">🔍 Find Outlier Data Points</div>
+            <div class="suggestion-chip">🚀 Space Tech Updates</div>
+        </div>
+    </main>
+
+    <!-- Features Showcase -->
+    <section class="features-section">
+        <div class="grid-cards">
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">Real-Time Context</h3>
+                <p class="feature-desc">Powered by massive live data feeds to give you up-to-the-minute answers without outdated knowledge limits.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Unfiltered & Direct</h3>
+                <p class="feature-desc">Built with a witty, no-nonsense approach inspired by modern exploratory AI paradigms.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">Structured Reliability</h3>
+                <p class="feature-desc">Organized data processing ensuring maximum accuracy, verifiable references, and structural depth.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div>&copy; 2026 Plether AI. All rights reserved.</div>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">System Status</a>
+        </div>
+    </footer>
+
+</body>
+                  </html>
+                  
